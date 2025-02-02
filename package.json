@@ -1,0 +1,31 @@
+{
+  "name": "ts-extensions-resolver",
+  "version": "1.0.0-alpha.8",
+  "description": "Transformer, resolves TS imports and exports extensions",
+  "license": "MIT",
+  "main": "dist/import-transformer.js",
+  "types": "dist/import-transformer.d.ts",
+  "author": {
+    "name": "misbiheyv",
+    "url": "https://github.com/misbiheyv"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [
+    "TypeScript",
+    "TypeScript imports",
+    "Import extensions"
+  ],
+  "devDependencies": {
+    "ts-patch": "^3.3.0",
+    "ts-node": "^10.9.2"
+  },
+  "peerDependencies": {
+    "typescript": "^5.7.3"
+  },
+  "files": [
+    "dist",
+    "package.json"
+  ]
+}
