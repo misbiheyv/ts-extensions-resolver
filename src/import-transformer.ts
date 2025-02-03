@@ -37,14 +37,14 @@ const pathVisitor = (
     return ts.visitEachChild(node, pathVisitor.bind(this, context, sourceFile), context);
   }
 
-  const modulePath = node.getText().replace(/(^['"])|(['"]$)/g, '');
+  const moduleSpecifier = node.getText().replace(/(^['"])|(['"]$)/g, '');
 
-  if (path.extname(modulePath)) {
+  if (path.extname(moduleSpecifier)) {
     return node;
   }
 
   const compilerOpts = context.getCompilerOptions();
-  const absolutePath = getAbsolutePath(sourceFile, compilerOpts, modulePath);
+  const absolutePath = getAbsolutePath(sourceFile, compilerOpts, moduleSpecifier);
 
   if (absolutePath == null) {
     return node;
@@ -84,14 +84,14 @@ function resolvePath(absolutePath: string, relativePath: string) {
  *
  * @param sourceFile
  * @param compilerOpts
- * @param modulePath
+ * @param moduleSpecifier
  */
-function getAbsolutePath(sourceFile: ts.SourceFile, compilerOpts: ts.CompilerOptions, modulePath: string) {
-  const alias = Object.keys(compilerOpts.paths ?? {}).find((alias) => modulePath.startsWith(alias.replace(/\/\*$/, '')));
+function getAbsolutePath(sourceFile: ts.SourceFile, compilerOpts: ts.CompilerOptions, moduleSpecifier: string) {
+  const alias = Object.keys(compilerOpts.paths ?? {}).find((alias) => moduleSpecifier.startsWith(alias.replace(/\/\*$/, '')));
 
   return alias
-    ? absolutePathFromAlias(sourceFile, compilerOpts, modulePath, alias)
-    : absolutePathFromPath(sourceFile, compilerOpts, modulePath);
+    ? absolutePathFromAlias(sourceFile, compilerOpts, moduleSpecifier, alias)
+    : absolutePathFromPath(sourceFile, compilerOpts, moduleSpecifier);
 }
 
 /**
@@ -101,22 +101,22 @@ function getAbsolutePath(sourceFile: ts.SourceFile, compilerOpts: ts.CompilerOpt
  * @param sourceFile
  * @param options
  * @param options.baseUrl
- * @param modulePath
+ * @param moduleSpecifier
  */
 function absolutePathFromPath(
   sourceFile: ts.SourceFile,
   {baseUrl}: ts.CompilerOptions,
-  modulePath: string
+  moduleSpecifier: string
 ) {
-  const isRelative = modulePath.startsWith('.');
+  const isRelative = moduleSpecifier.startsWith('.');
 
   if (!isRelative && !baseUrl) {
     return;
   }
 
   return baseUrl && !isRelative
-    ? path.resolve(baseUrl, modulePath)
-    : path.resolve(path.dirname(sourceFile.fileName), modulePath);
+    ? path.resolve(baseUrl, moduleSpecifier)
+    : path.resolve(path.dirname(sourceFile.fileName), moduleSpecifier);
 }
 
 /**
@@ -125,13 +125,13 @@ function absolutePathFromPath(
  *
  * @param sourceFile
  * @param options
- * @param modulePath
+ * @param moduleSpecifier
  * @param alias
  */
 function absolutePathFromAlias(
   sourceFile: ts.SourceFile,
   {paths, baseUrl}: ts.CompilerOptions,
-  modulePath: string,
+  moduleSpecifier: string,
   alias: string
 ) {
   let rootDir;
@@ -156,7 +156,7 @@ function absolutePathFromAlias(
     return;
   }
 
-  const pathPart = modulePath.replace(aliasPart, '');
+  const pathPart = moduleSpecifier.replace(aliasPart, '');
   const normalizedPaths = paths[alias].map((p) => p.replace('/*', pathPart));
 
   for (const normalizedPath of normalizedPaths) {

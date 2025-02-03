@@ -2,6 +2,21 @@
 
 A TypeScript transformer that resolves relative extensions, absolute baseUrl extensions, and path aliases. Supports .ts and .tsx extensions.
 
+## Syntax support
+
+| Description                | example input               | example output for file      | example output for module          |
+| -------------------------- | --------------------------- | ---------------------------- | ---------------------------------- |
+| relative import            | `import "./utils"`          | `import "./utils.js"`        | `import "./utils/index.js"`        |
+| relative export            | `export * from "./utils"`   | `export * from "./utils.js"` | `export * from "./utils/index.js"` |
+| relative dynamic import    | `import("./utils")`         | `import("./utils.js")`       | `import("./utils/index.js")`       |
+| baseUrl import             | `import "src/utils"`        | `import "./utils.js"`        | `import "./utils/index.js"`        |
+| baseUrl export             | `export * from "src/utils"` | `export * from "./utils.js"` | `export * from "./utils/index.js"` |
+| baseUrl dynamic import     | `import("src/utils")`       | `import("./utils.js")`       | `import("./utils/index.js")`       |
+| paths alias import         | `import "@/utils"`          | `import "./utils.js"`        | `import "./utils/index.js"`        |
+| paths alias export         | `export * from "@/utils"`   | `export * from "./utils.js"` | `export * from "./utils/index.js"` |
+| paths alias dynamic import | `import("@/utils")`         | `import("./utils.js")`       | `import("./utils/index.js")`       |
+
+
 ## Usage
 
 ### Install Dev Dependencies
@@ -81,11 +96,13 @@ src
 
 ```ts
 import {...} from './foo';
-import {...} from 'src/bar';
+import {...} from './bar';
 
-import('@/bar');
+import('src/bar');
+import('src/foo');
 
 export * from '@/bar';
+export * from '@/foo';
 ```
 
 ### Run build Command
@@ -100,7 +117,9 @@ npm run build
 import {...} from './foo/index.js';
 import {...} from './bar.js';
 
+import('./foo/index.js');
 import('./bar.js');
 
+export * from './foo/index.js';
 export * from './bar.js';
 ```
